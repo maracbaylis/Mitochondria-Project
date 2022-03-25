@@ -1,2 +1,2 @@
 # Mitochodria-Project
-A collection of programs and scripts used for mitochondrial somatic mutation Analysis
+A collection of programs and scripts created for mitochondrial somatic mutation analysis 
