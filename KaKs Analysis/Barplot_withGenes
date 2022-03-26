@@ -1,0 +1,87 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import glob 
+import sys
+import math
+
+#gnr = {}
+#for g,ps in neutral_gene_ratios.items():
+    #print(g, ps[1]/ps[0])
+    #gnr[g] = ps[1]/ps[0]
+#gnr
+
+midndsdf = {k:[] for k in ['GID','Stage', 'DN/DS', 'Pi/Ps']}
+
+for gid, subdf in midf.groupby("GID"):
+    
+    for stage, subsubdf in subdf.groupby("Stage"):
+        #mtvc = subdf.Type.value_counts()
+        mtvc = subsubdf.Type.value_counts()
+        #print(subsubdf)
+        #print(mtvc)
+        try:
+            PiNPs = (sum(subsubdf[(subsubdf.Type == 'missense_variant')].Pi)/sum(subsubdf[(subsubdf.Type == 'synonymous_variant')].Pi)) / gnr[geneconvert[gid]]
+            DnDs = (mtvc['missense_variant']/mtvc['synonymous_variant'])/gnr[g]
+
+        except:
+            PiNPs = np.nan
+            DnDs = np.nan
+        midndsdf['GID'].append(gid)
+        midndsdf['Stage'].append(stage)
+        
+
+        midndsdf['DN/DS'].append(DnDs)
+        midndsdf['Pi/Ps'].append(PiNPs)
+
+
+        #print(gid,stage)
+        #print(subsubdf.Type.value_counts())
+midndsdf = pd.DataFrame(midndsdf) 
+midndsdf
+
+
+
+geneconvert = {'FBgn0262952': 'Gene_241_1264',
+ 'FBgn0013674': 'Gene_1471_3010',
+ 'FBgn0013675': 'Gene_3084_3768',
+ 'FBgn0013672': 'Gene_4063_4735',
+ 'FBgn0013676': 'Gene_4737_5525',
+ 'FBgn0013681': 'Gene_5644_5997',
+ 'FBgn0013684': 'Gene_6433_8152',
+ 'FBgn0013680': 'Gene_8234_9572',
+ 'FBgn0013683': 'Gene_9574_9862',
+ 'FBgn0013678': 'Gene_10526_11662',
+ 'FBgn0013679': 'Gene_11747_12685', 
+ 'FBgn0013673':'Gene_3908_4069'}
+geneconvert.update({v:k for k,v in geneconvert.items()})
+geneconvert
+newmidndsdf['FlybaseGID'] = newmidndsdf['GID'].map(geneconvert).astype(str)
+
+
+newmidndsdf = newmidndsdf.replace("None", np.nan)
+newmidndsdf = newmidndsdf.dropna()
+#midf['Pi'] = midf.apply(calculate_pi_rows,axis=1)
+#newmidndsdf[geneconvert[newmidndsdf.GID]]
+#geneconvert[gid]
+
+staged = {'f':"adult", 'a':'adult', 'l':'larva', 'p': 'pupa'}
+stages = []
+for source in newmidndsdf.Stage:
+    #print(source)
+    letter = source.strip()
+    #print(letter)
+    if letter in staged:
+        stages.append(staged[letter])
+    else:
+        stages.append("NA")
+stages
+newmidndsdf["Long_Stage"] = stages
+sns.set_theme(style="whitegrid")
+hue_order = ['l', 'p', 'a']
+
+ax = sns.barplot(x='FlybaseGID', y='DN/DS', hue="Stage", hue_order= hue_order, data = newmidndsdf, ci = None, palette="Blues")
+ax.set_xlabel("Flybase Gene ID")
+ax.set_ylabel("DN/DS")
+plt.xticks( rotation=75)
