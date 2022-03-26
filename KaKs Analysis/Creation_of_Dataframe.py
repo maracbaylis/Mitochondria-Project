@@ -11,6 +11,10 @@ from scipy.stats import fisher_exact
 
 midf = pd.read_csv("../mbaylis/mitochondion_pileups_/fixed_pileups/fixed_all_mutations.tsv",sep='\t').drop("Unnamed: 0",axis=1)
 
+midf['Missense'] = midf.Type.apply(lambda x:('missense' in x))
+midf['Synonymous'] = midf.Type.apply(lambda x:('synonymous' in x))
+midf.Missense.value_counts()
+
 mttypes = {}
 for b1 in 'ACGT':
     for b2 in 'ACGT':
